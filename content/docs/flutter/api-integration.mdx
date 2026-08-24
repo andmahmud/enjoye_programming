@@ -1,0 +1,99 @@
+---
+title: API Integration
+description: Call REST APIs from Flutter with the http package — fetch, parse JSON, handle errors and loading states.
+category: flutter
+tags: [flutter, api, rest, http, json]
+difficulty: Intermediate
+readingTime: 9
+publishedAt: "2026-03-02"
+order: 5
+---
+
+## Introduction
+
+Almost every useful app talks to a server — weather data, exchange rates, user profiles. In this guide you will call a REST API from Flutter using the `http` package and display the result.
+
+## Add the dependency
+
+```yaml
+dependencies:
+  http: ^1.2.2
+```
+
+## Fetch data
+
+```dart
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+Future<Map<String, dynamic>> fetchExchangeRate() async {
+  final response = await http.get(
+    Uri.parse('https://api.example.com/rates/usd'),
+    headers: {'Accept': 'application/json'},
+  );
+
+  if (response.statusCode == 200) {
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  } else {
+    throw Exception('Failed to load rate (${response.statusCode})');
+  }
+}
+```
+
+<Callout type="warning" title="Always check the status code">
+A `200` response is not guaranteed. Servers return `404`, `429` or `500` for many reasons — treat every non-200 as an error path in your UI.
+</Callout>
+
+## Show loading, error and success states
+
+Wrap your future with a `FutureBuilder`, or store state manually:
+
+```dart
+FutureBuilder<Map<String, dynamic>>(
+  future: _rate,
+  builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return const CircularProgressIndicator();
+    }
+    if (snapshot.hasError) {
+      return Text('Something went wrong');
+    }
+    final rate = snapshot.data!['usd'] as num;
+    return Text('\$${rate.toStringAsFixed(2)}');
+  },
+)
+```
+
+## Parse JSON into model classes
+
+Raw maps are fragile. Convert responses into typed models (see [Project Structure](/docs/flutter/project-structure)):
+
+```dart
+class Rate {
+  final String code;
+  final double value;
+
+  Rate({required this.code, required this.value});
+
+  factory Rate.fromJson(Map<String, dynamic> json) => Rate(
+        code: json['code'] as String,
+        value: (json['value'] as num).toDouble(),
+      );
+}
+```
+
+## Keep API keys out of your code
+
+If an API requires a secret key, do **not** hard-code it in Dart — anyone can extract strings from your APK. Options:
+
+- Use environment variables at build time (`--dart-define=API_KEY=...`)
+- Proxy requests through your own server or a Firebase Cloud Function
+- Prefer APIs that support per-client public keys with domain/package restrictions
+
+<Callout type="tip" title="Test with real tools first">
+Before writing Dart code, hit the endpoint in Postman or curl. Confirm the JSON shape and required headers — it saves hours of guessing.
+</Callout>
+
+## What's next?
+
+For user accounts and databases without running a backend, continue to [Firebase Setup](/docs/firebase/setup).

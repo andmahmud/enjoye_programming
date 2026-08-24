@@ -1,0 +1,61 @@
+---
+title: AdMob App Setup
+description: Register your app in AdMob, link it to Play Store, and organize ad units the professional way.
+category: admob
+tags: [admob, setup, play-console]
+difficulty: Beginner
+readingTime: 7
+publishedAt: "2026-05-18"
+order: 2
+---
+
+## Introduction
+
+Before writing any ad code, your app must be registered correctly in AdMob. A clean setup — one AdMob app per store listing, well-named ad units — makes earnings reports readable for years.
+
+## Add your app to AdMob
+
+1. Sign in at [apps.admob.com](https://apps.admob.com).
+2. Click **Apps → Add app** and choose the platform.
+3. If your app is already on Google Play, search for it and link it — this enables better reporting.
+4. Note the generated **App ID** (`ca-app-pub-xxxxx~yyyyy`).
+
+The tilde (`~`) marks an App ID; a slash (`/`) marks an Ad Unit ID. Mixing them up is the most common integration bug.
+
+## Link Google Play
+
+In **App settings → App status**, connect your Play Console account. Benefits:
+
+- Automatic verification of ownership
+- Combined analytics across both dashboards
+- Eligibility for programmatic mediation features
+
+## Plan your ad units
+
+Create one ad unit per placement, not one shared unit:
+
+```text
+My Diary App (AdMob app)
+├── banner_home        (Banner, adaptive)
+├── banner_history     (Banner, adaptive)
+├── inter_daily_limit  (Interstitial)
+└── rewarded_premium   (Rewarded)
+```
+
+Naming convention: `format_location`. When a report says `inter_daily_limit earned $12`, you instantly know what works.
+
+<Callout type="tip" title="You can always add more">
+New ad units take a few hours to start serving. Create every placement you plan for before release day so they are warmed up.
+</Callout>
+
+## Configure payment details
+
+Under **Payments**, complete your profile and verify identity when prompted. Payments are issued monthly after reaching the threshold (typically $70–$100 depending on country). Do this early — payouts pause until verification is finished.
+
+## App-ads.txt (after publishing)
+
+Once live on Play Store, add your **app-ads.txt** snippet from AdMob to your developer website and reference it. It protects your inventory from spoofing and keeps eCPMs healthy.
+
+## What's next?
+
+Understand each format in [Ad Units](/docs/admob/ad-units), or jump straight into [Getting Started](/docs/admob/getting-started) code.

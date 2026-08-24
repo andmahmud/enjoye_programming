@@ -1,0 +1,84 @@
+---
+title: Android Getting Started
+description: Understand the Android side of your Flutter app — manifests, Gradle builds, permissions and app signing basics.
+category: android
+tags: [android, gradle, manifest, permissions]
+difficulty: Beginner
+readingTime: 8
+publishedAt: "2026-01-26"
+order: 1
+---
+
+## Introduction
+
+Flutter lets you avoid writing Java or Kotlin — but your app still ships as a native Android package. Understanding the few key files below saves hours when you need permissions, icons or release builds.
+
+## The files that matter
+
+```text
+android/
+├── app/build.gradle.kts     ← app id, versions, signing config
+├── src/main/
+│   ├── AndroidManifest.xml  ← permissions, app metadata
+│   └── res/                 ← launcher icons, strings
+└── build.gradle.kts         ← project-level plugins
+```
+
+## The manifest
+
+`AndroidManifest.xml` declares what your app needs from the system:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
+    <application android:label="My App">
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-xxxxx~yyyyy"/>
+    </application>
+</manifest>
+```
+
+Internet access is required by most plugins (Firebase, AdMob) even though Flutter templates omit it.
+
+## Gradle essentials
+
+In `android/app/build.gradle.kts`:
+
+| Setting | Purpose |
+| --- | --- |
+| `applicationId` | Unique Play Store identity — never change after publishing |
+| `minSdk` | Oldest supported Android version (21+ for Flutter) |
+| `targetSdk` / `compileSdk` | Newest SDK you target; Play requires recent values |
+| `versionCode` / `versionName` | Bump `versionCode` for every upload |
+
+<Callout type="warning" title="versionCode must always increase">
+Play Store rejects uploads with an existing `versionCode`. Set the next number every release — many CI pipelines automate this.
+</Callout>
+
+## Permissions at runtime
+
+Since Android 6.0, dangerous permissions (camera, location, notifications) need runtime consent. Plugins like `permission_handler` handle the dialog:
+
+```dart
+final status = await Permission.notification.request();
+if (status.isGranted) {
+  // proceed
+}
+```
+
+Declare in the manifest **and** request at runtime — both are required.
+
+## Debug vs release
+
+- `flutter run` builds debug: slower, debuggable, signed with a debug key.
+- `flutter build apk --release` produces the optimized artifact users install.
+
+Release signing uses your keystore — covered fully in [App Publishing](/docs/play-store/app-publishing).
+
+## What's next?
+
+- Prepare store-ready builds with [Play Store Publishing](/docs/play-store/app-publishing)
+- Declare permissions correctly in [Permissions](/docs/play-store/permissions)

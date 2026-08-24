@@ -1,0 +1,87 @@
+---
+title: Project Structure
+description: Organize your Flutter project with a scalable folder structure that grows from prototype to production.
+category: flutter
+tags: [flutter, architecture, organization]
+difficulty: Beginner
+readingTime: 7
+publishedAt: "2026-01-19"
+order: 2
+---
+
+## Introduction
+
+When you create a Flutter app, everything starts in `lib/main.dart`. That works fine for a demo — but real apps need structure. A predictable folder layout makes your code easier to navigate, easier to test and easier to grow.
+
+## A simple, scalable structure
+
+```text
+lib/
+├── main.dart              ← app entry point
+├── models/                ← data classes (User, Product…)
+├── services/              ← API calls, Firebase, storage
+├── providers/             ← state management (Provider/Riverpod)
+├── screens/               ← full-page widgets
+│   ├── home_screen.dart
+│   └── settings_screen.dart
+├── widgets/               ← reusable UI pieces
+│   ├── app_button.dart
+│   └── income_card.dart
+├── utils/                 ← helpers, formatters, constants
+└── theme/                 ← colors, text styles, dark mode
+```
+
+The rule of thumb: **models describe data, services talk to the outside world, screens compose the UI, and widgets are reusable pieces of UI.**
+
+## Example: a model class
+
+```dart
+class IncomeRecord {
+  final String id;
+  final double amount;
+  final DateTime date;
+
+  const IncomeRecord({
+    required this.id,
+    required this.amount,
+    required this.date,
+  });
+
+  factory IncomeRecord.fromJson(Map<String, dynamic> json) {
+    return IncomeRecord(
+      id: json['id'] as String,
+      amount: (json['amount'] as num).toDouble(),
+      date: DateTime.parse(json['date'] as String),
+    );
+  }
+}
+```
+
+Models live in `lib/models/` and contain no UI code. They know how to build themselves from JSON so your services stay thin.
+
+## Where do imports come from?
+
+Use package imports instead of relative paths:
+
+```dart
+// Good — survives file moves
+import 'package:my_app/widgets/app_button.dart';
+
+// Avoid — breaks when you reorganize folders
+import '../widgets/app_button.dart';
+```
+
+## Naming conventions
+
+- Files use `snake_case`: `home_screen.dart`
+- Classes use `UpperCamelCase`: `HomeScreen`
+- Variables and functions use `lowerCamelCase`: `monthlyIncome`
+- Private members start with underscore: `_counter`
+
+<Callout type="tip" title="Keep screens lean">
+If a screen file passes ~300 lines, split its cards, lists or dialogs into separate widgets in `widgets/`. Small files are faster to read and hot-reload.
+</Callout>
+
+## What's next?
+
+Structure is only useful when the UI inside it is organized too. Continue with [UI Development](/docs/flutter/ui-development) to learn how Flutter builds interfaces.

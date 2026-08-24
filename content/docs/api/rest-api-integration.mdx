@@ -1,0 +1,89 @@
+---
+title: REST API Integration
+description: Understand REST APIs from the ground up — HTTP methods, status codes, JSON and authentication headers.
+category: api
+tags: [api, rest, http, json, authentication]
+difficulty: Beginner
+readingTime: 9
+publishedAt: "2026-03-16"
+order: 1
+---
+
+## Introduction
+
+A REST API is how your app talks to a server over HTTP: you send a request to a URL, the server replies — usually with JSON. Master this one pattern and every weather app, login system or payment gateway becomes approachable.
+
+## The anatomy of a request
+
+```text
+GET https://api.example.com/v1/rates?base=USD
+Authorization: Bearer eyJhbGci...
+Accept: application/json
+```
+
+| Part | Example | Purpose |
+| --- | --- | --- |
+| Method | `GET` | What you want to do |
+| Endpoint | `/v1/rates` | Which resource |
+| Query params | `?base=USD` | Filter/modify the request |
+| Headers | `Authorization` | Identity & metadata |
+| Body | JSON (POST only) | Data you send |
+
+## The core methods
+
+- **GET** — read data. Safe and repeatable.
+- **POST** — create something new.
+- **PUT/PATCH** — update all/part of an existing resource.
+- **DELETE** — remove it.
+
+## Status codes tell the story
+
+```text
+2xx  success        → 200 OK, 201 Created
+4xx  your mistake   → 400 bad input, 401 unauthorized, 404 missing
+5xx  server trouble → 500 error, 503 unavailable
+```
+
+Always branch on these in code: retry on 5xx, refresh tokens on 401, show validation messages from 400 responses.
+
+## JSON is the lingua franca
+
+```json
+{
+  "id": "tx_1024",
+  "amount": 250,
+  "currency": "USD",
+  "source": "admob"
+}
+```
+
+Most languages parse this into native objects automatically. In Dart, see [API Integration](/docs/flutter/api-integration) for typed model parsing.
+
+## Authentication
+
+Public APIs aside, most endpoints require credentials:
+
+```text
+Authorization: Bearer <token>
+```
+
+Typical flow:
+
+1. Send your API key / user credentials to a login endpoint.
+2. Receive a short-lived access token.
+3. Attach it to every request.
+4. Refresh it when it expires (401 response).
+
+<Callout type="danger" title="Never ship secret keys in app code">
+Anything inside an APK can be extracted. Keep true secrets on a backend; use package-restricted public keys or token proxies for direct calls.
+</Callout>
+
+## Practical tips
+
+- Read the API docs for rate limits before polling frequently.
+- Handle timeouts (`http` default is none in some clients) so your UI never hangs.
+- Log requests during development with a proxy like Charles or DevTools network tab.
+
+## What's next?
+
+Apply this directly in Flutter with [API Integration](/docs/flutter/api-integration), then persist results offline using [Cloud Firestore](/docs/firebase/firestore).

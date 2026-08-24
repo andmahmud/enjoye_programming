@@ -1,0 +1,96 @@
+---
+title: Rewarded Ads
+description: Implement rewarded video ads in Flutter — earn callbacks, reward granting and the highest eCPM format.
+category: admob
+tags: [admob, rewarded, flutter, video]
+difficulty: Intermediate
+readingTime: 8
+publishedAt: "2026-07-07"
+order: 6
+---
+
+## Introduction
+
+Rewarded ads are a value exchange: users watch 15–30 seconds of video and receive something meaningful — premium features, currency, extra attempts. Because the user opts in, completion rates are high and eCPMs are the best of any format.
+
+## Load a rewarded ad
+
+```dart
+import 'dart:io' show Platform;
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+
+class RewardedService {
+  RewardedAd? _ad;
+
+  static final String _adUnitId = Platform.isAndroid
+      ? 'ca-app-pub-3940256099942544/5224354917'
+      : 'ca-app-pub-3940256099942544/1712485313';
+
+  void load() {
+    RewardedAd.load(
+      adUnitId: _adUnitId,
+      request: const AdRequest(),
+      rewardedAdLoadCallback: RewardedAdLoadCallback(
+        onAdLoaded: (ad) => _ad = ad,
+        onAdFailedToLoad: (_) => _ad = null,
+      ),
+    );
+  }
+
+  void show({required VoidCallback onRewardEarned}) {
+    final ad = _ad;
+    if (ad == null) return;
+
+    ad.fullScreenContentCallback = FullScreenContentCallback(
+      onAdDismissedFullScreenContent: (ad) {
+        ad.dispose();
+        load(); // preload for next time
+      },
+      onAdFailedToShowFullScreenContent: (ad, _) {
+        ad.dispose();
+        load();
+      },
+    );
+
+    ad.show(onUserEarnedReward: (_, reward) => onRewardEarned());
+  }
+}
+```
+
+## Grant rewards only through the callback
+
+The `onUserEarnedReward` callback fires only when the user completes the required interaction. Never grant the reward when the ad *shows* — grant it inside the callback:
+
+```dart
+rewardedService.show(
+  onRewardEarned: () {
+    context.read<PremiumModel>().unlockForDay();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Premium unlocked for 24 hours! 🎉')),
+    );
+  },
+);
+```
+
+<Callout type="warning" title="Handle 'not ready' gracefully">
+Ads fail to load offline or with low fill. If `_ad == null`, tell the user "No video available right now, try later" instead of failing silently.
+</Callout>
+
+## Reward ideas that convert
+
+| App type | Reward |
+| --- | --- |
+| Notes/utility | 24h premium features |
+| Quiz | Extra lives or hints |
+| Finance tracker | Export CSV without paywall |
+| Game | Coins, revives, skins |
+
+## Placement tips
+
+- Offer rewards at moments of need ("Unlock PDF export — watch a short video").
+- Keep the entry button visible but not nagging.
+- Track your rewarded eCPM vs interstitial eCPM — rewarded usually wins.
+
+## What's next?
+
+Monetize app launch time with [App Open Ads](/docs/admob/app-open-ads), or estimate earnings with the [App Income Calculator](/tools/app-income-calculator).

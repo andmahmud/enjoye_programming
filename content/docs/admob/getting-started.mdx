@@ -1,0 +1,114 @@
+---
+title: AdMob Getting Started
+description: Add Google AdMob to your Flutter app — accounts, packages, test IDs and your first banner ad.
+category: admob
+tags: [admob, ads, monetization, flutter]
+difficulty: Intermediate
+readingTime: 10
+publishedAt: "2026-07-28"
+order: 1
+---
+
+## Introduction
+
+Google AdMob is the fastest way to start earning from a free app. You show ads, Google fills them from millions of advertisers, and you earn per impression or click. This guide gets AdMob running inside Flutter with safe test ads.
+
+## The setup path
+
+1. Create an [AdMob account](https://apps.admob.com) (free).
+2. Register your app in AdMob to get an **App ID**.
+3. Create **Ad Units** for each placement (banner, interstitial…).
+4. Install the Flutter package and configure both platforms.
+5. Test with Google's test IDs before going live.
+
+## Install the package
+
+```yaml
+dependencies:
+  google_mobile_ads: ^6.0.0
+```
+
+## Configure the App ID
+
+The App ID goes into each platform's manifest — this is different from your Ad Unit IDs.
+
+**Android** (`android/app/src/main/AndroidManifest.xml`):
+
+```xml
+<application>
+    <meta-data
+        android:name="com.google.android.gms.ads.APPLICATION_ID"
+        android:value="ca-app-pub-3940256099942544~3347511713"/>
+</application>
+```
+
+**iOS** (`ios/Runner/Info.plist`):
+
+```xml
+<key>GADApplicationIdentifier</key>
+<string>ca-app-pub-3940256099942544~1458002511</string>
+```
+
+<Callout type="warning" title="Test IDs above are real test IDs">
+The values shown are Google's official *test* app IDs. Replace them with your own only when you are ready to publish — never click live ads during development, that is grounds for account suspension.
+</Callout>
+
+## Initialize the SDK
+
+```dart
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await MobileAds.instance.initialize();
+  runApp(const MyApp());
+}
+```
+
+## Show your first banner
+
+```dart
+BannerAd? _banner;
+
+@override
+void initState() {
+  super.initState();
+  _banner = BannerAd(
+    adUnitId: 'ca-app-pub-3940256099942544/6300978111', // test banner id
+    size: AdSize.banner,
+    request: const AdRequest(),
+    listener: BannerAdListener(
+      onAdLoaded: (_) => setState(() {}),
+    ),
+  )..load();
+}
+
+@override
+Widget build(BuildContext context) {
+  return Column(
+    children: [
+      Expanded(child: _pageContent),
+      if (_banner != null)
+        SizedBox(
+          height: _banner!.size.height.toDouble(),
+          child: AdWidget(ad: _banner!),
+        ),
+    ],
+  );
+}
+```
+
+## Always use test ads while developing
+
+| Format | Test Ad Unit ID |
+| --- | --- |
+| Banner | `ca-app-pub-3940256099942544/6300978111` |
+| Interstitial | `ca-app-pub-3940256099942544/1033173712` |
+| Rewarded | `ca-app-pub-3940256099942544/5224354917` |
+| App Open | `ca-app-pub-3940256099942544/3419835294` |
+
+## What's next?
+
+- Deep-dive every format in [Ad Units](/docs/admob/ad-units)
+- Learn production placement in [Banner Ads](/docs/admob/banner-ads)
+- Estimate your earnings with the [App Income Calculator](/tools/app-income-calculator)

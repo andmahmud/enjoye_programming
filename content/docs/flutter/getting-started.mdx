@@ -1,0 +1,79 @@
+---
+title: Getting Started
+description: Install Flutter, configure your editor and run your first app on Android and iOS emulators.
+category: flutter
+tags: [flutter, setup, installation]
+difficulty: Beginner
+readingTime: 9
+publishedAt: "2026-01-12"
+order: 1
+---
+
+## Introduction
+
+Flutter is Google's UI toolkit for building natively compiled applications for mobile, web and desktop from a single codebase. Instead of writing separate Android and iOS apps, you write Dart code once and Flutter renders the interface on every platform.
+
+This guide takes you from zero to a running app on your own device or emulator.
+
+## Install the Flutter SDK
+
+Download the SDK for your operating system from the official site and extract it to a permanent location, for example `C:\dev\flutter` on Windows or `~/development/flutter` on macOS.
+
+```bash
+# Add Flutter to your PATH (Windows PowerShell example)
+setx PATH "$env:PATH;C:\dev\flutter\bin"
+
+# Verify the installation
+flutter doctor
+```
+
+`flutter doctor` checks your environment and reports what is missing — the Android toolchain, Xcode, Chrome and so on. Fix each issue it lists until you have at least one green checkmark.
+
+<Callout type="tip" title="Run flutter doctor after every setup change">
+Whenever you install a new Android SDK version or update Android Studio, run `flutter doctor -v` again. It tells you exactly which component broke before you waste time debugging your app.
+</Callout>
+
+## Set up an editor
+
+The two most popular options are **Android Studio** (or IntelliJ) with the Flutter plugin, and **VS Code** with the Flutter extension. Both give you:
+
+- Code completion and quick fixes for Dart
+- Hot reload while debugging
+- Widget inspector to examine your UI
+
+For VS Code, install the **Flutter** extension — it automatically installs the Dart extension too.
+
+## Create your first project
+
+```bash
+flutter create my_first_app
+cd my_first_app
+flutter devices        # list available emulators and devices
+flutter run            # run on the default device
+```
+
+If everything is configured correctly, the default counter app launches. Try changing something in `lib/main.dart`, save the file, and watch hot reload update the screen instantly — no full rebuild needed.
+
+## Understanding the project layout
+
+```text
+my_first_app/
+├── lib/          ← your Dart code lives here
+│   └── main.dart ← the entry point
+├── android/      ← native Android configuration
+├── ios/          ← native iOS configuration
+├── test/         ← widget and unit tests
+└── pubspec.yaml  ← dependencies and assets
+```
+
+You will spend almost all of your time inside `lib/`. The `android/` and `ios/` folders are edited only when you need native configuration such as permissions or app icons.
+
+## What's next?
+
+- Learn how files are organized in [Project Structure](/docs/flutter/project-structure)
+- Build your first screens in [UI Development](/docs/flutter/ui-development)
+- Manage data across screens with [State Management](/docs/flutter/state-management)
+
+<Callout type="note" title="Watch along">
+Every step in this guide is covered in detail on the Enjoye Programming YouTube channel. Check the [Tutorials](/tutorials) page for the matching video.
+</Callout>

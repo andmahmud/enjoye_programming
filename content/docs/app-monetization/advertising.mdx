@@ -1,0 +1,71 @@
+---
+title: Advertising
+description: How app advertising works — ad formats, revenue math with eCPM and RPM, and how to maximize ad income without hurting users.
+category: app-monetization
+tags: [advertising, admob, ecpm, monetization]
+difficulty: Beginner
+readingTime: 9
+publishedAt: "2026-06-20"
+order: 2
+---
+
+## Introduction
+
+Advertising is the default business model of the free internet — and of free apps. You give users something valuable at no cost; advertisers pay to reach those users through you. Done well, users barely notice the ads and revenue compounds with growth.
+
+## How ad revenue is calculated
+
+Two numbers dominate every dashboard:
+
+- **eCPM** (effective cost per mille) — what you earn per 1,000 *impressions*:
+
+```text
+eCPM = (Total earnings ÷ Impressions) × 1,000
+```
+
+- **RPM** (revenue per mille) — earnings per 1,000 app *sessions* or screens.
+
+```dart
+// Daily ad revenue example
+final dailyImpressions = dailyUsers * adsPerUser;
+final dailyRevenue = dailyImpressions * ecpm / 1000;
+```
+
+Try your own numbers in the [App Income Calculator](/tools/app-income-calculator).
+
+## What moves eCPM
+
+| Factor | Effect |
+| --- | --- |
+| User country | US/UK/DE eCPMs can be 5–10× South Asian rates |
+| Ad format | Rewarded > Interstitial > Native > Banner |
+| Season | Q4 (holidays) peaks; January dips |
+| Niche | Finance & shopping ads pay more than games |
+
+## The format playbook
+
+1. **Banner** on content-heavy screens — steady baseline.
+2. **Interstitial** after completed actions — volume spikes.
+3. **Rewarded** where users want value — highest eCPM.
+4. **App Open** at cold start — free launch-time money.
+5. **Native** inside feeds when design matters.
+
+Full implementation guides live under [AdMob](/docs/admob/getting-started).
+
+<Callout type="warning" title="More ads ≠ more money">
+Every extra ad costs retention. Losing a daily-active user usually costs more than one additional impression earns. Optimize *revenue per user over time*, not today's impressions.
+</Callout>
+
+## Measuring what matters
+
+Track weekly:
+
+- eCPM per format
+- Sessions per user (retention proxy)
+- Revenue per user (ARPU)
+- Crash-free sessions (ad SDKs can hurt stability)
+
+## What's next?
+
+- Implement formats step by step: [Banner Ads](/docs/admob/banner-ads), [Interstitial Ads](/docs/admob/interstitial-ads), [Rewarded Ads](/docs/admob/rewarded-ads)
+- Compare models in [App Business Models](/docs/app-monetization/app-business-models)

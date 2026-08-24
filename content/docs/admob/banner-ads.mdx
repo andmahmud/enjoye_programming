@@ -1,0 +1,87 @@
+---
+title: Banner Ads
+description: Implement adaptive banner ads in Flutter — sizing, lifecycle handling and policy-safe placement.
+category: admob
+tags: [admob, banner, flutter]
+difficulty: Beginner
+readingTime: 7
+publishedAt: "2026-07-21"
+order: 4
+---
+
+## Introduction
+
+Banner ads are the simplest AdMob format: a small strip docked at the edge of the screen. They earn steadily without interrupting anyone — ideal for your first monetized screen.
+
+## Create an adaptive banner
+
+Adaptive banners pick the optimal width for the device and maximize revenue per placement:
+
+```dart
+import 'dart:io' show Platform;
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+
+class BannerExample extends StatefulWidget {
+  const BannerExample({super.key});
+  @override
+  State<BannerExample> createState() => _BannerExampleState();
+}
+
+class _BannerExampleState extends State<BannerExample> {
+  BannerAd? _bannerAd;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_bannerAd == null) {
+      final width = MediaQuery.sizeOf(context).width.truncate();
+
+      _bannerAd = BannerAd(
+        adUnitId: Platform.isAndroid
+            ? 'ca-app-pub-3940256099942544/9214589741'
+            : 'ca-app-pub-3940256099942544/2435281174',
+        size: AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(width)!,
+        request: const AdRequest(),
+        listener: const BannerAdListener(),
+      )..load();
+      setState(() {});
+    }
+  }
+
+  @override
+  void dispose() {
+    _bannerAd?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final ad = _bannerAd;
+    return ad == null
+        ? const SizedBox.shrink()
+        : SizedBox(
+            width: ad.size.width.toDouble(),
+            height: ad.size.height.toDouble(),
+            child: AdWidget(ad: ad),
+          );
+  }
+}
+```
+
+<Callout type="warning" title="Always dispose banners">
+Each `BannerAd` holds native memory. Disposing in `dispose()` prevents leaks that crash long sessions.
+</Callout>
+
+## Placement rules
+
+- Reserve space for the banner so content doesn't shift when it loads (prevents "accidental click" penalties).
+- Keep it at the bottom of content screens, never overlapping buttons.
+- Don't stack two banners on one screen — against policy and pointless.
+
+## Reload on screen change
+
+Banners auto-refresh (default every 60s), but when navigating between screens, load a fresh banner per screen instead of sharing one instance across routes.
+
+## What's next?
+
+Step up to full-screen formats with [Interstitial Ads](/docs/admob/interstitial-ads).

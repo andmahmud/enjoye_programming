@@ -1,0 +1,73 @@
+---
+title: Policy Compliance
+description: Avoid Play Store rejections — the policies that matter most for ad-supported apps, and how to pass review the first time.
+category: play-store
+tags: [policy, compliance, review, ads]
+difficulty: Intermediate
+readingTime: 9
+publishedAt: "2026-06-09"
+order: 5
+---
+
+## Introduction
+
+Most rejections are not mysterious — they repeat the same handful of policy themes. This checklist covers what reviewers actually check, especially for ad-monetized Flutter apps.
+
+## The big five policy areas
+
+### 1. Metadata accuracy
+
+- App title ≤ 30 characters, no keyword stuffing ("FREE CAMERA EDITOR PRO 2026 NEW").
+- Screenshots must show your real app — mockups of features that don't exist are grounds for removal.
+- Icon and feature graphic shouldn't imitate other brands.
+
+### 2. Data transparency
+
+Your [Data Safety](/docs/play-store/data-safety) form, [Privacy Policy](/docs/play-store/privacy-policy) and actual SDKs must tell one consistent story.
+
+### 3. Ads placement policy
+
+Google's **Ads policy** is strict about:
+
+- Ads overlapping or covering UI elements
+- Accidental clicks (ads placed near buttons, or shifting content under a finger)
+- Interstitials on unexpected moments (launch, back-press spam)
+- Ads in notification content
+
+### 4. Functional minimums
+
+Apps must do something meaningful. Thin wrappers around webviews, "wallpaper + 3 images" apps and copycats get removed. Aim for real functionality even if small.
+
+### 5. Account deletion
+
+If users can create accounts, you must offer in-app deletion plus a web link declared in the console.
+
+## Pre-submission checklist
+
+```text
+□ versionCode incremented
+□ Release build tested on a physical device
+□ Privacy policy URL live and current
+□ Data safety matches shipped SDKs
+□ AdMob test IDs replaced with production IDs
+□ No ad overlaps; banners reserve layout space
+□ Account deletion flow exists (if auth used)
+□ Store listing assets show real screens
+```
+
+<Callout type="danger" title="Repeated violations risk account termination">
+A single rejected update is normal. Three strikes on the *same* policy can terminate your developer account with all apps. Fix root causes, not just symptoms.
+</Callout>
+
+## When your app is rejected
+
+1. Read the exact policy quoted in the email — it links to specifics.
+2. Fix the issue completely, don't resubmit hoping for a different reviewer.
+3. Reply to the review thread if clarification helps.
+
+Most first-time rejections resolve within one honest revision cycle.
+
+## What's next?
+
+- Build compliant monetization from day one with [AdMob Getting Started](/docs/admob/getting-started)
+- Understand revenue models in [App Monetization](/docs/app-monetization/advertising)

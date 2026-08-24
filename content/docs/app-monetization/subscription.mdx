@@ -1,0 +1,83 @@
+---
+title: Subscription
+description: Build recurring app income with subscriptions — pricing, paywalls, Google Play Billing setup and retention.
+category: app-monetization
+tags: [subscription, play-billing, monetization, recurring]
+difficulty: Intermediate
+readingTime: 10
+publishedAt: "2026-06-27"
+order: 3
+---
+
+## Introduction
+
+Subscriptions trade one-time payments for predictable, compounding revenue. A thousand users paying $2/month is $24,000 a year — and it renews automatically. This model rewards apps that deliver ongoing value.
+
+## Why subscriptions win
+
+```text
+One-time sale:   $5 × 1 purchase = $5 lifetime (per user)
+Subscription:    $2 × 12 months  = $24 lifetime (per retained user)
+```
+
+The math compounds further because subscribers who stay are your most engaged users.
+
+## Choosing what to charge for
+
+Good subscription candidates:
+
+- Ongoing content (courses, tips, reports)
+- Ongoing tools (cloud sync, unlimited storage, AI features)
+- Removal of ads + premium experience
+
+Poor candidates: one-time utility features (a calculator doesn't need a monthly plan).
+
+## Pricing structure
+
+| Plan | Typical price | Role |
+| --- | --- | --- |
+| Monthly | $1.99–$4.99 | Low commitment entry |
+| Yearly | ~40–60% of monthly×12 | Best value — push this |
+| Free trial | 3–7 days | Doubles conversion |
+
+<Callout type="tip" title="Make yearly the default">
+Play Billing lets you mark one plan as the default selection. Apps that pre-select the yearly plan see significantly higher annual revenue per subscriber.
+</Callout>
+
+## Implementing with Play Billing
+
+Flutter's `in_app_purchase` package covers both IAP and subscriptions:
+
+```dart
+// Query available subscription plans
+final response = await InAppPurchase.instance
+    .queryProductDetails({'premium_monthly', 'premium_yearly'});
+
+// Purchase
+final param = PurchaseParam(productDetails: product);
+await InAppPurchase.instance.buyNonConsumable(
+  purchaseParam: param,
+);
+```
+
+Then listen to the purchase stream and validate receipts server-side when possible.
+
+## The paywall that converts
+
+1. **Context first**: show the paywall at the moment of value ("Export this report? Go Premium").
+2. **List benefits**, not features: "Unlimited exports" beats "Pro plan enabled".
+3. **Social proof and clarity**: ratings, no-hidden-fees line.
+4. **Restore purchases button** — required by policy on iOS, expected everywhere.
+
+## Retention is everything
+
+Churn kills subscription businesses. Reduce it with:
+
+- Onboarding emails/notifications during trial
+- Regular new content or feature drops
+- Win-back offers on cancel screens
+
+## What's next?
+
+- One-time unlock alternative: [Premium Features](/docs/app-monetization/premium-features)
+- Combine models in [App Business Models](/docs/app-monetization/app-business-models)

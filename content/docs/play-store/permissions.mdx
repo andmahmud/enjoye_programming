@@ -1,0 +1,76 @@
+---
+title: Permissions
+description: Request Android permissions the policy-safe way — manifest declarations, runtime requests and Play Console disclosures.
+category: play-store
+tags: [permissions, android, play-console, compliance]
+difficulty: Beginner
+readingTime: 7
+publishedAt: "2026-05-20"
+order: 4
+---
+
+## Introduction
+
+Permissions are promises: each one you declare says "my app needs this capability." Google Play checks that your features justify every permission. Fewer permissions = smoother reviews and higher user trust.
+
+## The three layers of a permission
+
+1. **Manifest declaration** — `AndroidManifest.xml`
+2. **Runtime request** — user dialog (for dangerous permissions)
+3. **Play disclosure** — declaration in Play Console for sensitive ones (e.g., background location)
+
+All three must align.
+
+## Common permissions and their requirements
+
+```xml
+<uses-permission android:name="android.permission.INTERNET"/>
+<uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+<uses-permission android:name="android.permission.CAMERA"/>
+```
+
+| Permission | Runtime dialog? | Notes |
+| --- | --- | --- |
+| `INTERNET` | No | Auto-granted; needed by most SDKs |
+| `POST_NOTIFICATIONS` | Yes (Android 13+) | Ask contextually after first-run |
+| `CAMERA` / `RECORD_AUDIO` | Yes | Only if feature is core |
+| Location (background) | Yes + Play form | Heavily restricted — avoid unless essential |
+
+## Requesting at runtime with Flutter
+
+The `permission_handler` package standardizes this:
+
+```dart
+final status = await Permission.notification.status;
+
+if (status.isDenied) {
+  final result = await Permission.notification.request();
+  if (result.isGranted) enableNotifications();
+}
+```
+
+<Callout type="tip" title="Ask at the moment of value">
+Requesting camera permission on first launch feels invasive. Instead, ask when the user taps "Scan receipt" — conversion rates are dramatically higher.
+</Callout>
+
+## Rules that trigger rejection
+
+- Declaring permissions your app never uses ("permission bloat").
+- Using sensitive permissions primarily for ads or analytics.
+- Requesting location in the background without an obvious core feature.
+
+## Minimize by design
+
+Before adding any permission, ask:
+
+1. Is there a system API that avoids it? (e.g., photo picker instead of storage)
+2. Can I make the feature optional so only users who need it grant it?
+3. Does my privacy policy mention this data?
+
+<Callout type="warning" title="Update the Data safety form">
+New permission often means new data type collected. Keep [Data Safety](/docs/play-store/data-safety) declarations in sync or face rejected updates.
+</Callout>
+
+## What's next?
+
+Understand what reviewers look for overall in [Policy Compliance](/docs/play-store/policy-compliance).

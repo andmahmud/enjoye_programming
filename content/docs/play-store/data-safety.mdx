@@ -1,0 +1,57 @@
+---
+title: Data Safety Form
+description: Fill the Play Console data safety form correctly for apps using Firebase, AdMob and analytics — with common answers explained.
+category: play-store
+tags: [data-safety, play-console, compliance]
+difficulty: Intermediate
+readingTime: 8
+publishedAt: "2026-05-12"
+order: 3
+---
+
+## Introduction
+
+The **Data safety** form tells users (and Google) what data your app collects and shares. It is mandatory for every app — and one of the most common sources of rejections when filled carelessly. This page walks through a typical Flutter app using Firebase + AdMob.
+
+## The core question: collected vs shared
+
+- **Collected**: your app or its SDKs transmit data off the device.
+- **Shared**: that data goes to third parties *beyond* your direct service providers.
+
+AdMob's advertising ID usage counts as **collected**, and depending on settings, **shared** with Google for ads.
+
+## A typical AdMob + Firebase answer set
+
+| Data type | Collected? | Shared? | Purpose |
+| --- | --- | --- | --- |
+| Device/other IDs (advertising ID) | Yes | Yes | Advertising, analytics |
+| App interactions (analytics events) | Yes | No* | Analytics |
+| Email address (if Firebase Auth) | Yes | No | Account management |
+| Crash logs (Crashlytics) | Yes | No | Stability |
+
+\* Firebase Analytics is generally treated as service-provider processing; verify current guidance in Play's help center.
+
+<Callout type="warning" title="Your answers must match reality">
+Google cross-checks SDKs found in your binary against your declarations. If you ship AdMob but declare "no data collected", the update gets rejected.
+</Callout>
+
+## How to audit your own app
+
+1. Open `pubspec.yaml` — list every analytics/ads/backend package.
+2. Check each SDK vendor's "Play data disclosure" documentation (Firebase and AdMob both publish exact recommended answers).
+3. Declare **every** type those vendors report.
+4. Answer the encryption questions: all HTTPS traffic = data encrypted in transit → yes.
+
+## Encryption & deletion answers
+
+- **Encrypted in transit**: yes if all requests use HTTPS (Firebase and AdMob do).
+- **Data deletion request mechanism**: you must offer a way to delete user data — an in-app account deletion flow or a documented email request. Since 2024, apps with account creation **must provide in-app deletion**.
+
+## When you change integrations
+
+Adding Crashlytics next month changes your form. Revisit Data safety during every release checklist item where dependencies changed — it takes five minutes and prevents rejected updates.
+
+## What's next?
+
+- Write the policy these declarations reference in [Privacy Policy](/docs/play-store/privacy-policy)
+- Review permission-specific rules in [Permissions](/docs/play-store/permissions)

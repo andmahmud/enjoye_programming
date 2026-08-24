@@ -1,0 +1,116 @@
+---
+title: Cloud Firestore
+description: Store and sync app data in real time with Cloud Firestore — collections, documents, queries and security rules.
+category: firebase
+tags: [firebase, firestore, database, nosql]
+difficulty: Intermediate
+readingTime: 10
+publishedAt: "2026-04-13"
+order: 3
+---
+
+## Introduction
+
+Cloud Firestore is a flexible, real-time NoSQL database. Data lives in **documents** grouped into **collections**, and any change syncs to every connected device within milliseconds — no server code required.
+
+## The data model
+
+```text
+users (collection)
+ └── user_123 (document)
+      ├── name: "Rahim"
+      ├── plan: "premium"
+      └── income/ (subcollection)
+           ├── doc_1 { amount: 250, source: "admob" }
+           └── doc_2 { amount: 90,  source: "iap" }
+```
+
+Documents hold maps of values; collections hold documents. You can nest subcollections up to 100 levels deep.
+
+## Install and write data
+
+```yaml
+dependencies:
+  cloud_firestore: ^5.6.0
+```
+
+```dart
+final db = FirebaseFirestore.instance;
+
+// Add a document with an auto-ID
+await db.collection('users').add({
+  'name': 'Rahim',
+  'plan': 'free',
+  'createdAt': FieldValue.serverTimestamp(),
+});
+
+// Set a document with a known ID
+await db.collection('users').doc('user_123').set({'name': 'Rahim'});
+
+// Update without replacing the whole document
+await db.collection('users').doc('user_123').update({'plan': 'premium'});
+```
+
+## Read once or listen live
+
+```dart
+// One-time read
+final snapshot = await db.collection('users').doc('user_123').get();
+print(snapshot.data()?['name']);
+
+// Real-time listener — rebuilds UI on every change
+StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+  stream: db.collection('users').snapshots(),
+  builder: (context, snapshot) {
+    if (!snapshot.hasData) return const CircularProgressIndicator();
+    final docs = snapshot.data!.docs;
+    return ListView.builder(
+      itemCount: docs.length,
+      itemBuilder: (_, index) => Text(docs[index]['name']),
+    );
+  },
+)
+```
+
+## Queries
+
+```dart
+final premiumUsers = await db
+    .collection('users')
+    .where('plan', isEqualTo: 'premium')
+    .orderBy('createdAt', descending: true)
+    .limit(20)
+    .get();
+```
+
+<Callout type="warning" title="Indexes are required for compound queries">
+Combining `where` + `orderBy` on different fields requires a composite index. Firestore prints a direct link to create it in the console when you run the query — just click it.
+</Callout>
+
+## Security rules
+
+Never rely on your app's UI for access control — Firestore rules run on the server:
+
+```text
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow read, write: if request.auth != null
+                         && request.auth.uid == userId;
+    }
+  }
+}
+```
+
+These rules let users read and write **only their own document**.
+
+<Callout type="danger" title="Start in locked-down mode">
+New projects often start with open test rules that expire after 30 days. Before launching publicly, tighten rules so unauthenticated reads are impossible.
+</Callout>
+
+## What's next?
+
+- Bring users back with [Push Notifications](/docs/firebase/notifications)
+- Monetize your Firestore-powered app with [AdMob](/docs/admob/getting-started)
+

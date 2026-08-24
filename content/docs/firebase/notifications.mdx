@@ -1,0 +1,96 @@
+---
+title: Push Notifications
+description: Send push notifications to Flutter users with Firebase Cloud Messaging — foreground, background and topic-based messaging.
+category: firebase
+tags: [firebase, fcm, notifications, flutter]
+difficulty: Intermediate
+readingTime: 9
+publishedAt: "2026-04-27"
+order: 4
+---
+
+## Introduction
+
+Firebase Cloud Messaging (FCM) lets you notify users about new content, offers or updates — for free, on both Android and iOS. Notifications dramatically improve retention when used respectfully.
+
+## Install and initialize
+
+```yaml
+dependencies:
+  firebase_messaging: ^15.2.0
+  flutter_local_notifications: ^18.0.1
+```
+
+Request permission (required on iOS 12+, good practice on Android 13+):
+
+```dart
+final messaging = FirebaseMessaging.instance;
+
+final settings = await messaging.requestPermission(
+  alert: true,
+  badge: true,
+  sound: true,
+);
+
+print('Permission granted: ${settings.authorizationStatus}');
+```
+
+## Get the device token
+
+Each device receives a unique token you can target from the console or your server:
+
+```dart
+final token = await messaging.getToken();
+print('FCM token: $token');
+
+// Refresh handling
+FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
+  // update the token in your database
+});
+```
+
+<Callout type="tip" title="Tokens change">
+Tokens rotate when the app is restored on a new device or updated. Always store fresh tokens via `onTokenRefresh` instead of assuming they are permanent.
+</Callout>
+
+## Handle messages in every state
+
+```dart
+// App is open (foreground)
+FirebaseMessaging.onMessage.listen((message) {
+  final notification = message.notification;
+  if (notification == null) return;
+  // Show it with flutter_local_notifications
+});
+
+// User tapped notification while app was in background
+FirebaseMessaging.onMessageOpenedApp.listen((message) {
+  // navigate to the relevant screen
+});
+
+// Notification opened a terminated app
+final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+if (initialMessage != null) {
+  // deep-link into specific content
+}
+```
+
+## Topic-based broadcast
+
+Topics are the simplest way to reach groups of users without managing individual tokens:
+
+```dart
+await FirebaseMessaging.instance.subscribeToTopic('daily-tips');
+```
+
+Then send a message to `daily-tips` from the console — everyone subscribed gets it.
+
+## Best practices
+
+- **Value first**: send notifications users actually want (tips, milestones), not daily spam.
+- **Deep-link**: route taps to the exact content mentioned.
+- **Segment**: use topics or user properties so beginners don't get advanced-user messages.
+
+<Callout type="warning" title="Respect quiet hours">
+Excessive notifications are the #1 reason users disable them entirely — or uninstall. Start with one meaningful notification per week.
+</Callout>

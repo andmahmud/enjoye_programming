@@ -1,0 +1,125 @@
+---
+title: UI Development
+description: Master Flutter widgets — layouts, rows, columns, lists and responsive design for every screen size.
+category: flutter
+tags: [flutter, widgets, ui, layout]
+difficulty: Beginner
+readingTime: 10
+publishedAt: "2026-02-02"
+order: 3
+---
+
+## Introduction
+
+In Flutter, **everything is a widget** — buttons, text, padding, even the app itself. Building UI means composing small widgets into larger ones. Once this clicks, Flutter becomes one of the fastest frameworks to design with.
+
+## The two core layout widgets
+
+Almost every screen is built from `Column` (vertical) and `Row` (horizontal):
+
+```dart
+Widget build(BuildContext context) {
+  return Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      const Text('Monthly Revenue',
+          style: TextStyle(fontSize: 18)),
+      Text('\$1,248',
+          style: Theme.of(context).textTheme.headlineMedium),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: const [
+          Icon(Icons.trending_up),
+          Text('+12% vs last month'),
+        ],
+      ),
+    ],
+  );
+}
+```
+
+| Widget | Purpose |
+| --- | --- |
+| `Column` / `Row` | Stack children vertically / horizontally |
+| `Container` | Box with padding, margin, color, decoration |
+| `Expanded` / `Flexible` | Share remaining space proportionally |
+| `ListView` | Scrollable list of children |
+| `Stack` | Position children on top of each other |
+
+## Reusable widgets
+
+Extract repeated UI into its own widget instead of copy-pasting code:
+
+```dart
+class IncomeCard extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const IncomeCard({
+    super.key,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Text(label),
+            Text(value, style: Theme.of(context)
+                .textTheme.headlineSmall),
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
+<Callout type="tip" title="const everything you can">
+Marking widgets `const` lets Flutter skip rebuilding them entirely. It is the easiest performance win in the framework.
+</Callout>
+
+## Lists that scroll
+
+Use `ListView.builder` when the number of items is large or unknown — it builds only the visible children:
+
+```dart
+ListView.builder(
+  itemCount: records.length,
+  itemBuilder: (context, index) {
+    final record = records[index];
+    return ListTile(
+      title: Text(record.title),
+      trailing: Text('\$${record.amount}'),
+    );
+  },
+)
+```
+
+## Responsive layouts
+
+To look right on phones and tablets, adapt to available space:
+
+- Use `MediaQuery.of(context).size.width` or `LayoutBuilder` to switch layouts.
+- Prefer flexible widgets (`Expanded`, `Wrap`) over fixed sizes.
+- Test with different device sizes in DevTools before shipping.
+
+```dart
+LayoutBuilder(
+  builder: (context, constraints) {
+    if (constraints.maxWidth > 600) {
+      return GridView.count(crossAxisCount: 3, children: cards);
+    }
+    return ListView(children: cards);
+  },
+)
+```
+
+## What's next?
+
+UI shows data — next you need somewhere to keep it. Read [State Management](/docs/flutter/state-management) next.

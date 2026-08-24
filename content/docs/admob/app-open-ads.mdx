@@ -1,0 +1,104 @@
+---
+title: App Open Ads
+description: Monetize your app's launch time with App Open ads — loading flow, cold start handling and UX rules.
+category: admob
+tags: [admob, app-open, flutter]
+difficulty: Intermediate
+readingTime: 7
+publishedAt: "2026-08-03"
+order: 7
+---
+
+## Introduction
+
+App Open ads appear while your app loads. They turn unavoidable startup time into revenue — as long as the ad never delays the user longer than the app itself would.
+
+## The correct launch flow
+
+```text
+User taps icon
+   → Splash screen (your branding)
+   → App Open ad shows *if loaded* (user can dismiss)
+   → Home screen
+```
+
+Key rule: the ad must be **preloaded and ready** before the splash ends — or skipped entirely. Never make users wait for an ad to load.
+
+## Preload at startup
+
+```dart
+import 'dart:io' show Platform;
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+
+class AppOpenService {
+  AppOpenAd? _ad;
+  bool _showing = false;
+
+  static final String _adUnitId = Platform.isAndroid
+      ? 'ca-app-pub-3940256099942544/3419835294'
+      : 'ca-app-pub-3940256099942544/5662855259';
+
+  void load() {
+    AppOpenAd.load(
+      adUnitId: _adUnitId,
+      request: const AdRequest(),
+      adLoadCallback: AppOpenAdLoadCallback(
+        onAdLoaded: (ad) => _ad = ad,
+        onAdFailedToLoad: (_) => _ad = null,
+      ),
+    );
+  }
+
+  void showIfAvailable() {
+    final ad = _ad;
+    if (_showing || ad == null) return;
+    _showing = true;
+
+    ad.fullScreenContentCallback = FullScreenContentCallback(
+      onAdDismissedFullScreenContent: (ad) {
+        ad.dispose();
+        _showing = false;
+        load();
+      },
+      onAdFailedToShowFullScreenContent: (ad, _) {
+        ad.dispose();
+        _showing = false;
+        load();
+      },
+    );
+
+    ad.show();
+  }
+}
+```
+
+Call `load()` during initialization, then `showIfAvailable()` when the splash completes:
+
+```dart
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await MobileAds.instance.initialize();
+  final appOpen = AppOpenService()..load();
+
+  runApp(MyApp(onReady: () => appOpen.showIfAvailable()));
+}
+```
+
+<Callout type="warning" title="Expire old ads">
+App Open ads stay valid for a limited time. If the process sat in background for hours, dispose and reload instead of showing a stale ad.
+</Callout>
+
+## UX rules that keep you policy-safe
+
+- Show on **cold starts only**, not every foreground resume.
+- Never show before/while another full-screen ad plays.
+- Keep your splash minimal so the transition feels seamless.
+
+<Callout type="tip" title="Cap it">
+Even cold-start ads annoy power users. Consider skipping the ad for sessions that begin within 15 minutes of the previous one.
+</Callout>
+
+## What's next?
+
+- Review all formats in [Ad Units & Formats](/docs/admob/ad-units)
+- Learn how earnings reach your bank in [How to Make Money From Apps](/docs/app-monetization/how-to-make-money-from-apps)

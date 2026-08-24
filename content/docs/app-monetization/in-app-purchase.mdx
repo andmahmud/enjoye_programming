@@ -1,0 +1,85 @@
+---
+title: In-App Purchase
+description: Sell digital items inside your app with Google Play Billing — product types, Flutter implementation and policy rules.
+category: app-monetization
+tags: [in-app-purchase, iap, play-billing, monetization]
+difficulty: Intermediate
+readingTime: 9
+publishedAt: "2026-07-04"
+order: 4
+---
+
+## Introduction
+
+In-app purchase (IAP) lets users buy digital goods inside your app — coins, hints, templates or upgrades. Google processes the payment through **Play Billing** and pays out monthly; you focus on what's for sale.
+
+## Product types
+
+| Type | Consumed? | Examples |
+| --- | --- | --- |
+| Consumable | Yes | 100 coins, 5 hints |
+| Non-consumable | No (permanent) | Remove ads, unlock theme pack |
+| Subscription | Renews | Covered in [Subscription](/docs/app-monetization/subscription) |
+
+## Set up products in Play Console
+
+1. **Monetize → Products → In-app products → Create**.
+2. Give each product a unique ID like `coins_pack_100` — IDs are permanent.
+3. Set price tiers per country.
+4. Activate the product.
+
+<Callout type="warning" title="Product IDs never change">
+You cannot edit an ID after creation. Use a clear naming scheme (`pack_small`, `unlock_pro`) because your code references it forever.
+</Callout>
+
+## Implementation in Flutter
+
+```yaml
+dependencies:
+  in_app_purchase: ^3.2.0
+```
+
+```dart
+// 1. Initialize and query
+final InAppPurchase _iap = InAppPurchase.instance;
+await _iap.isAvailable();
+
+final response = await _iap.queryProductDetails({'coins_pack_100'});
+
+// 2. Buy a consumable
+await _iap.buyConsumable(
+  purchaseParam: PurchaseParam(productDetails: response.productDetails.first),
+);
+
+// 3. Listen for completed purchases
+_sub = _iap.purchaseStream.listen((purchases) {
+  for (final purchase in purchases) {
+    if (purchase.status == PurchaseStatus.purchased) {
+      grantCoins(); // deliver the goods
+      _iap.completePurchase(purchase);
+    }
+  }
+});
+```
+
+## Policy essentials
+
+- **Deliver what you sell** — undelivered purchases generate refunds and strikes.
+- **No real-world goods**: Play Billing covers digital only.
+- **Respect the restore flow**: non-consumables must be re-grantable on new devices.
+- **Price fairly across regions**: use Play's country templates rather than one global price.
+
+## Designing offers that sell
+
+- Bundle small consumables into packs (100 / 550 / 1200 coins).
+- Anchor pricing: show the "most popular" tag on the middle tier.
+- Trigger IAP at the moment of need ("Out of hints? Get 5 more").
+
+<Callout type="tip" title="Test before launch">
+Play Billing has a dedicated testing mode with license testers and test cards. Never ship untested purchase flows — failed deliveries create angry reviews instantly.
+</Callout>
+
+## What's next?
+
+- Recurring alternative: [Subscription](/docs/app-monetization/subscription)
+- One-time unlocks: [Premium Features](/docs/app-monetization/premium-features)

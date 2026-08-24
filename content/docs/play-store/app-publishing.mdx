@@ -1,0 +1,86 @@
+---
+title: App Publishing
+description: Publish your app on Google Play step by step — signing, store listing, release builds and the review process.
+category: play-store
+tags: [play-console, publishing, release, signing]
+difficulty: Intermediate
+readingTime: 12
+publishedAt: "2026-06-02"
+order: 1
+---
+
+## Introduction
+
+Publishing is where your work meets real users. Google Play has a well-defined process — developer account, signed release build, store listing, data forms and review. Follow it once and every future release takes minutes.
+
+## 1. Create a Play Console account
+
+Register at [play.google.com/console](https://play.google.com/console). There is a one-time $25 registration fee. Individual accounts now require **20 testers over 14 days** for new personal apps before production access — plan this into your timeline.
+
+## 2. Create the app
+
+**All apps → Create app**: choose a name (max 30 characters), default language, *App* or *Game*, and free/paid. Free vs paid is permanent — you cannot switch later.
+
+## 3. Sign your release build
+
+Generate an upload keystore once and guard it forever:
+
+```bash
+keytool -genkey -v -keystore ~/upload-keystore.jks \
+        -keyalg RSA -keysize 2048 -validity 10000 \
+        -alias upload
+```
+
+Reference it in `android/key.properties` (never commit this file):
+
+```properties
+storePassword=********
+keyPassword=********
+keyAlias=upload
+storeFile=/absolute/path/upload-keystore.jks
+```
+
+Then build:
+
+```bash
+flutter build appbundle --release
+```
+
+Google re-signs distribution copies via **Play App Signing**, so the upload key only authenticates you.
+
+<Callout type="danger" title="Losing your keystore is serious">
+Back up the keystore and passwords in two safe places. Without them (and without Play App Signing enrollment), you cannot update your app.
+</Callout>
+
+## 4. Complete the store listing
+
+Prepare these assets before starting:
+
+- App icon 512×512 PNG
+- At least 2 phone screenshots (recommend 4–8)
+- Feature graphic 1024×500
+- Short description (80 chars) + full description (4000 chars)
+
+Write the description around what the user gets — features as benefits.
+
+## 5. Content rating & data safety
+
+- **Content rating questionnaire**: honest answers about ads, user content, sharing.
+- **Data safety form**: declare exactly which data you collect and whether it's shared. Firebase Auth + AdMob apps must declare identifiers and analytics collection. See [Data Safety](/docs/play-store/data-safety).
+- **Privacy policy URL** is mandatory for every app that collects data. Generate guidance in [Privacy Policy](/docs/play-store/privacy-policy).
+
+## 6. Release to production
+
+1. Go to **Production → Create new release**.
+2. Upload `app-release.aab` (Android App Bundle).
+3. Write a clear release note.
+4. Roll out — first releases typically review within days.
+
+<Callout type="tip" title="Expect the first review to be slowest">
+New accounts get closer scrutiny. Respond promptly if Play emails about policy issues; most rejections are fixed by updating the data safety form or removing a permission.
+</Callout>
+
+## What's next?
+
+- Get declarations right the first time with [Data Safety](/docs/play-store/data-safety)
+- Understand required [Permissions](/docs/play-store/permissions) disclosures

@@ -1,0 +1,86 @@
+---
+title: Premium Features
+description: The freemium model done right — which features to lock, how to design the upgrade moment, and conversion benchmarks.
+category: app-monetization
+tags: [premium, freemium, monetization, unlock]
+difficulty: Beginner
+readingTime: 7
+publishedAt: "2026-06-22"
+order: 5
+---
+
+## Introduction
+
+Freemium means the core app is free forever, while your best capabilities sit behind a one-time unlock. It respects users (no nagging ads) and converts your most engaged segment into direct payers.
+
+## What to keep free vs premium
+
+**Free (the hook):**
+
+- Everything needed for daily basic use
+- Enough value that users would recommend it
+
+**Premium (the payoff):**
+
+- Power features: export, automation, bulk actions
+- Convenience: cloud sync, unlimited items, widgets
+- Identity: themes, icons, customization
+
+<Callout type="tip" title="The 80/20 rule">
+Keep ~80% of functionality free. If the free tier feels crippled, reviews turn negative and growth stalls — which starves the paid funnel too.
+</Callout>
+
+## The upgrade moment
+
+Never show a generic "Upgrade to Pro" banner on launch. Trigger it at the **moment of need**:
+
+```text
+User taps "Export as PDF"
+   → "PDF export is a Premium feature"
+   → [Unlock once — $4.99]  [Maybe later]
+```
+
+This context converts far better than any settings-page button.
+
+## Implementation pattern
+
+```dart
+class PremiumGate {
+  static const String _unlockId = 'unlock_pro';
+
+  Future<bool> isUnlocked() async {
+    // check Play Billing purchase state or local flag
+    return _purchasedIds.contains(_unlockId);
+  }
+
+  Future<void> requirePremium(BuildContext context, VoidCallback action) async {
+    if (await isUnlocked()) {
+      action();
+    } else {
+      await showPaywallSheet(context);
+    }
+  }
+}
+```
+
+Wrap gated actions with `requirePremium` so every locked feature shares one paywall.
+
+## Pricing psychology
+
+- One-time unlocks typically price at **$2.99–$9.99** depending on app category.
+- Offer an early-bird discount for the first month after install.
+- Consider "lifetime + support the developer" framing — it converts well in utility apps.
+
+## Combining with ads
+
+Two common hybrid patterns:
+
+1. Ads everywhere; premium removes them.
+2. Light ads on free; premium adds power features *and* ad removal.
+
+Pattern 2 earns from both segments simultaneously — see [App Business Models](/docs/app-monetization/app-business-models).
+
+## What's next?
+
+- Recurring version of this model: [Subscription](/docs/app-monetization/subscription)
+- Estimate mixed income streams with the [App Revenue Estimator](/tools/app-revenue-estimator)

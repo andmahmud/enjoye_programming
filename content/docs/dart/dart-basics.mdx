@@ -1,0 +1,103 @@
+---
+title: Dart Basics
+description: Learn the fundamentals of the Dart language — variables, functions, classes and async programming.
+category: dart
+tags: [dart, basics, language, async]
+difficulty: Beginner
+readingTime: 10
+publishedAt: "2026-01-05"
+order: 1
+---
+
+## Introduction
+
+Dart is the language behind Flutter. It feels familiar if you have used Java, JavaScript or C# — but it has a few features that make it especially pleasant for UI code. This page covers everything you need before writing your first Flutter screen.
+
+## Variables and types
+
+```dart
+var name = 'Enjoye';            // inferred String
+String channel = 'Programming'; // explicit type
+int year = 2026;
+double rating = 4.9;
+bool isFun = true;
+
+final pi = 3.1416;   // runtime constant
+const app = 'Learn'; // compile-time constant
+```
+
+Use `final` when a value is set once at runtime, `const` when it is known at compile time.
+
+<Callout type="tip" title="Prefer final by default">
+Make every variable `final` unless it truly changes. The analyzer will tell you when something can be upgraded to `const`.
+</Callout>
+
+## Functions
+
+```dart
+// Optional named parameters with defaults
+String greet(String name, {String greeting = 'Hello'}) {
+  return '$greeting, $name!';
+}
+
+// Arrow syntax for one-line functions
+double celsiusToFahrenheit(double c) => c * 9 / 5 + 32;
+```
+
+Named parameters make call sites readable — Flutter's widget constructors use this everywhere:
+
+```dart
+Text('Monthly revenue',
+     style: TextStyle(fontSize: 20));
+```
+
+## Classes
+
+```dart
+class App {
+  final String name;
+  int downloads;
+
+  App({required this.name, this.downloads = 0});
+
+  void describe() => print('$name has $downloads downloads');
+}
+```
+
+Constructors can also be named (`App.trial()`), and factory constructors let you control how objects are created — useful for parsing JSON.
+
+## Collections
+
+```dart
+final topics = <String>['flutter', 'firebase', 'admob'];
+final income = <String, double>{'jan': 120.5, 'feb': 98.0};
+
+final premium = topics.where((t) => t != 'admob').toList();
+final total = income.values.reduce((a, b) => a + b);
+```
+
+`map`, `where`, `reduce` and spread operators (`...`) cover 90% of everyday collection work.
+
+## Async programming
+
+Network calls and file I/O return Futures; streams deliver multiple values over time:
+
+```dart
+Future<double> fetchRate() async {
+  await Future.delayed(const Duration(seconds: 1)); // simulate network
+  return 117.4;
+}
+
+void main() async {
+  final rate = await fetchRate();
+  print('USD rate: $rate');
+}
+```
+
+<Callout type="warning" title="Never block the UI thread">
+Always use `async`/`await` for slow work. If you need heavy computation, run it in an isolate so animations stay smooth.
+</Callout>
+
+## What's next?
+
+Null safety prevents an entire category of crashes. Read [Null Safety](/docs/dart/null-safety) to understand Dart's most distinctive feature.

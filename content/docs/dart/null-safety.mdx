@@ -1,0 +1,79 @@
+---
+title: Null Safety
+description: Understand Dart null safety — nullable types, the ?! operators, late variables and writing crash-proof code.
+category: dart
+tags: [dart, null-safety, language]
+difficulty: Intermediate
+readingTime: 7
+publishedAt: "2026-01-08"
+order: 2
+---
+
+## Introduction
+
+Null safety is a compile-time guarantee that no variable contains `null` unless you explicitly allow it. It eliminates "null pointer exception" bugs before your app ever runs — and it shapes how all modern Dart code is written.
+
+## Nullable vs non-nullable
+
+```dart
+String title = 'Flutter';   // can never be null
+String? subtitle;           // may hold null (note the ?)
+
+title = subtitle;           // ❌ compile error — subtitle might be null
+title = subtitle ?? 'Default text'; // ✅ provide a fallback
+```
+
+The type system now knows exactly which variables might be empty, and forces you to handle that case.
+
+## Handling null values
+
+```dart
+// 1. Default value with ??
+final display = subtitle ?? 'No subtitle';
+
+// 2. Conditional access with ?. — returns null instead of crashing
+final length = subtitle?.length;
+
+// 3. Convert once with !, when you are certain it's not null
+final guaranteed = subtitle!;
+```
+
+<Callout type="warning" title="Use ! sparingly">
+`!` disables the safety check. If you are wrong, the app crashes at runtime. Prefer `??`, `?.` or `if (value != null)` blocks.
+</Callout>
+
+## Late variables
+
+Sometimes a non-nullable variable cannot be initialized immediately — for example a controller created in `initState()`:
+
+```dart
+late final TextEditingController _controller;
+
+@override
+void initState() {
+  super.initState();
+  _controller = TextEditingController();
+}
+```
+
+`late` promises the compiler that the value *will* be set before first use. Accessing it earlier throws a clear runtime error.
+
+## Null-aware operators in collections and calls
+
+```dart
+// Only add if not null
+final tags = ['flutter', ...?optionalTags];
+
+// Call only when the object exists
+_unsubscribe?.call();
+```
+
+## Practical checklist
+
+- Make fields non-nullable by default; add `?` only when absence is meaningful.
+- Initialize state in constructors or `initState`, using `late final` when needed.
+- When parsing JSON, use safe casts and default values: `(json['rating'] as num?)?.toDouble() ?? 0`.
+
+<Callout type="tip" title="Let the analyzer guide you">
+Run `flutter analyze` regularly. Null safety errors are caught here — long before they become one-star Play Store reviews.
+</Callout>

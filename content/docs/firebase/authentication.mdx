@@ -1,0 +1,107 @@
+---
+title: Authentication
+description: Add email/password and Google Sign-In to your Flutter app with Firebase Authentication.
+category: firebase
+tags: [firebase, authentication, login, google-signin]
+difficulty: Beginner
+readingTime: 11
+publishedAt: "2026-03-23"
+order: 2
+---
+
+## Introduction
+
+Firebase Authentication handles the entire sign-in flow — registration, sessions, password resets — so you can add secure user accounts in an afternoon. This guide covers email/password and Google Sign-In.
+
+## Enable sign-in methods
+
+In the Firebase Console open **Authentication → Sign-in method** and enable:
+
+- **Email/Password**
+- **Google** (requires adding your SHA-1 fingerprint for Android)
+
+Get your SHA-1 key with:
+
+```bash
+cd android && ./gradlew signingReport
+```
+
+Add it under **Project settings → Your apps → SHA certificate fingerprints**.
+
+## Install the packages
+
+```yaml
+dependencies:
+  firebase_auth: ^5.5.0
+  google_sign_in: ^6.2.1
+```
+
+## Email / password
+
+```dart
+import 'package:firebase_auth/firebase_auth.dart';
+
+final auth = FirebaseAuth.instance;
+
+// Register
+Future<void> register(String email, String password) async {
+  await auth.createUserWithEmailAndPassword(
+    email: email,
+    password: password,
+  );
+}
+
+// Sign in
+Future<void> signIn(String email, String password) async {
+  await auth.signInWithEmailAndPassword(email: email, password: password);
+}
+
+// Sign out
+Future<void> signOut() => auth.signOut();
+```
+
+<Callout type="warning" title="Catch auth errors for users">
+Wrong passwords throw `firebase_auth_exceptions`. Catch `FirebaseAuthException` and show a friendly message instead of a generic "error occurred".
+</Callout>
+
+## Google Sign-In
+
+```dart
+Future<UserCredential?> signInWithGoogle() async {
+  final googleUser = await GoogleSignIn().signIn();
+  if (googleUser == null) return null; // cancelled
+
+  final googleAuth = await googleUser.authentication;
+
+  final credential = GoogleAuthProvider.credential(
+    accessToken: googleAuth.accessToken,
+    idToken: googleAuth.idToken,
+  );
+
+  return FirebaseAuth.instance.signInWithCredential(credential);
+}
+```
+
+## Listen to auth state
+
+The most useful pattern is reacting to login changes globally:
+
+```dart
+StreamBuilder<User?>(
+  stream: FirebaseAuth.instance.authStateChanges(),
+  builder: (context, snapshot) {
+    if (snapshot.hasData) return const HomeScreen();
+    return const LoginScreen();
+  },
+)
+```
+
+Your app now automatically shows the right screen when users sign in, out or restore a session on restart.
+
+<Callout type="tip" title="Test on a real device">
+Google Sign-In behaves differently on emulators without Play services. Always test the full flow on a physical device before publishing.
+</Callout>
+
+## What's next?
+
+Store per-user data securely in [Cloud Firestore](/docs/firebase/firestore).

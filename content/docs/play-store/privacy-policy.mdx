@@ -1,0 +1,78 @@
+---
+title: Privacy Policy
+description: Write a compliant privacy policy for your app — what to include, AdMob and Firebase disclosures, and free hosting options.
+category: play-store
+tags: [privacy-policy, compliance, legal]
+difficulty: Beginner
+readingTime: 7
+publishedAt: "2026-05-11"
+order: 2
+---
+
+## Introduction
+
+Every app that collects *any* data — even just an advertising ID from AdMob — must publish a privacy policy, both inside the app and as a public URL in Play Console. The good news: for most apps this is a one-page document you can write in an hour.
+
+## What your policy must state
+
+1. **Who you are** — developer/company name and contact email.
+2. **What data is collected** — be specific:
+   - Advertising ID / device identifiers (AdMob)
+   - Analytics events (Firebase)
+   - Email address if you use authentication
+   - Crash logs
+3. **Why it's collected** — ads personalization, analytics, account features.
+4. **Third parties involved** — name Google (AdMob, Firebase) and any other SDKs.
+5. **Data deletion** — how users can request removal of their data.
+6. **Children** — whether the app targets children under 13.
+
+## A minimal template
+
+```markdown
+# Privacy Policy — [App Name]
+
+Last updated: [DATE]
+
+[Developer name] ("we") operates [App Name].
+
+## Data we collect
+- Device identifiers for advertising (Google AdMob)
+- Usage analytics (Google Firebase)
+
+## How we use it
+To display advertisements, measure usage and improve the app.
+
+## Third parties
+Data may be shared with Google LLC per their privacy policy.
+
+## Contact
+Questions or deletion requests: your@email.com
+```
+
+<Callout type="warning" title="Match your actual SDKs">
+Copy-pasting a generic policy that doesn't mention your real SDKs is a rejection reason. Open your `pubspec.yaml` and list every service that touches user data.
+</Callout>
+
+## Where to host it
+
+Options that work with Play Console:
+
+- GitHub Pages / Gist (free, stable URL)
+- Your own website (best for branding)
+- Firebase Hosting
+
+The URL must load without login and work on mobile.
+
+## Where it appears
+
+1. **Play Console → App content → Privacy policy** — set the URL.
+2. **Inside your app** — link it from settings and from any permission dialog.
+3. **First-run consent** where required (e.g., GDPR regions).
+
+<Callout type="tip" title="Update when integrations change">
+Adding a new SDK? Update the policy the same day. An accurate, current policy is also a trust signal that improves conversion on your listing.
+</Callout>
+
+## What's next?
+
+Declare everything officially in the [Data Safety](/docs/play-store/data-safety) form.

@@ -1,0 +1,105 @@
+---
+title: Interstitial Ads
+description: Show full-screen interstitial ads at natural breaks — preloading, frequency control and UX-safe triggers.
+category: admob
+tags: [admob, interstitial, flutter]
+difficulty: Beginner
+readingTime: 8
+publishedAt: "2026-07-14"
+order: 5
+---
+
+## Introduction
+
+Interstitials are full-screen ads that pay significantly more than banners. The trade-off: they interrupt the user, so *when* you show them matters as much as showing them at all.
+
+## Preload the interstitial
+
+Interstitials take seconds to load — always load them ahead of time:
+
+```dart
+import 'dart:io' show Platform;
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+
+class InterstitialService {
+  InterstitialAd? _ad;
+  bool _isShowing = false;
+
+  static final String _adUnitId = Platform.isAndroid
+      ? 'ca-app-pub-3940256099942544/1033173712'
+      : 'ca-app-pub-3940256099942544/441146891';
+
+  void load() {
+    InterstitialAd.load(
+      adUnitId: _adUnitId,
+      request: const AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (ad) {
+          _ad = ad;
+          ad.fullScreenContentCallback = FullScreenContentCallback(
+            onAdDismissedFullScreenContent: (ad) {
+              ad.dispose();
+              load(); // preload the next one
+            },
+            onAdFailedToShowFullScreenContent: (ad, error) {
+              ad.dispose();
+              load();
+            },
+          );
+        },
+        onAdFailedToLoad: (_) => _ad = null,
+      ),
+    );
+  }
+
+  void show() {
+    if (_isShowing || _ad == null) return; // never block flow waiting
+    _isShowing = true;
+    _ad!.show().then((_) => _isShowing = false);
+  }
+
+  bool get isReady => _ad != null;
+}
+```
+
+## Trigger points that respect the user
+
+Good moments:
+
+- After completing a task (export saved, level finished)
+- Between content items (article → article)
+- On explicit exit confirmation
+
+Bad moments:
+
+- Immediately after launch or resume
+- Mid-form or mid-checkout
+- More than once every few minutes
+
+<Callout type="warning" title="Policy: no accidental clicks">
+Google can suspend accounts for interstitials shown too frequently or placed to trick taps. A simple rule — one interstitial per meaningful action, with a gap of several minutes — keeps you safe.
+</Callout>
+
+## Frequency capping
+
+Track how often you show:
+
+```dart
+DateTime? _lastShown;
+
+void showWithCap() {
+  final last = _lastShown;
+  final capped = last != null &&
+      DateTime.now().difference(last) < const Duration(minutes: 5);
+  if (!capped && service.isReady) {
+    service.show();
+    _lastShown = DateTime.now();
+  }
+}
+```
+
+You can also set server-side caps in AdMob under **Ad units → Frequency capping**.
+
+## What's next?
+
+For the highest eCPM and happiest users, add [Rewarded Ads](/docs/admob/rewarded-ads).

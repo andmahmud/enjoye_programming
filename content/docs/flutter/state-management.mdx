@@ -1,0 +1,105 @@
+---
+title: State Management
+description: Understand setState, lifting state up and Provider — and pick the right approach for your app.
+category: flutter
+tags: [flutter, state, provider, architecture]
+difficulty: Intermediate
+readingTime: 11
+publishedAt: "2026-02-16"
+order: 4
+---
+
+## Introduction
+
+State is any data that can change while your app runs — the current tab, a loading flag, the user's income records. Choosing *where that data lives* is the most important architectural decision in a Flutter app.
+
+## Level 1: setState
+
+For local widget state, `setState` is perfect:
+
+```dart
+class CounterPage extends StatefulWidget {
+  const CounterPage({super.key});
+
+  @override
+  State<CounterPage> createState() => _CounterPageState();
+}
+
+class _CounterPageState extends State<CounterPage> {
+  int _count = 0;
+
+  void _increment() {
+    setState(() {
+      _count++;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text('$_count');
+  }
+}
+```
+
+<Callout type="warning" title="Don't over-use setState">
+`setState` rebuilds the whole widget every time. If two distant widgets need the same value, passing it through constructors gets messy fast — that's the signal to lift state out.
+</Callout>
+
+## Level 2: Provider
+
+[Provider](https://pub.dev/packages/provider) moves state above the widget tree so any widget can read it:
+
+```yaml
+dependencies:
+  provider: ^6.1.2
+```
+
+Create a model that calls `notifyListeners()` when data changes:
+
+```dart
+class IncomeModel extends ChangeNotifier {
+  double _monthlyTotal = 0;
+  double get monthlyTotal => _monthlyTotal;
+
+  void addRecord(double amount) {
+    _monthlyTotal += amount;
+    notifyListeners();
+  }
+}
+```
+
+Provide it at the top of the app:
+
+```dart
+runApp(
+  ChangeNotifierProvider(
+    create: (context) => IncomeModel(),
+    child: const MyApp(),
+  ),
+);
+```
+
+Then consume it anywhere:
+
+```dart
+final income = context.watch<IncomeModel>();
+Text('\$${income.monthlyTotal}');
+```
+
+## Which approach should you choose?
+
+| Situation | Recommendation |
+| --- | --- |
+| Local UI state (toggles, text fields) | `setState` |
+| Shared app state, small–medium apps | `provider` or `Riverpod` |
+| Very large apps with complex streams | `Bloc` / `Riverpod` |
+
+All three are official or widely-adopted patterns. Start simple; migrate only when complexity demands it.
+
+<Callout type="note" title="Rule of thumb">
+If you find yourself passing the same variable through four constructor levels ("prop drilling"), it belongs in shared state management.
+</Callout>
+
+## What's next?
+
+Real apps rarely keep all their data on-device. Learn to fetch it in [API Integration](/docs/flutter/api-integration).
