@@ -5,7 +5,7 @@ export const siteConfig = {
   description:
     "Practical tutorials, documentation, tools and resources for developers building apps and digital products.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://enjoyeprogramming.com",
-  youtubeUrl: "https://www.youtube.com/@EnjoyeProgramming",
+  youtubeUrl: "https://www.youtube.com/@EnjoyProgramming-1",
   keywords: [
     "Flutter tutorial",
     "Dart programming",
