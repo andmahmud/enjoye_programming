@@ -27,6 +27,7 @@ const NAV_LINKS = [
   { label: "Tutorials", href: "/tutorials" },
   { label: "App Monetization", href: "/app-monetization" },
   { label: "Tools", href: "/tools" },
+  { label: "About Me", href: "/about" },
 ] as const;
 
 export function SiteNavbar({ searchIndex }: { searchIndex: SearchDoc[] }) {

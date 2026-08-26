@@ -2,7 +2,9 @@ import Link from "next/link";
 
 import { Logo } from "@/components/logo";
 import { YoutubeIcon } from "@/components/youtube-icon";
+import { FacebookIcon, GithubIcon, InstagramIcon, LinkedinIcon, WhatsAppIcon } from "@/components/social-icons";
 import { categories } from "@/lib/categories";
+import { personalContact } from "@/lib/contact";
 import { siteConfig } from "@/lib/site";
 
 const productLinks = [
@@ -10,7 +12,7 @@ const productLinks = [
   { label: "Tutorials", href: "/tutorials" },
   { label: "Tools", href: "/tools" },
   { label: "App Monetization", href: "/app-monetization" },
-  { label: "About", href: "/about" },
+  { label: "About Me", href: "/about" },
 ];
 
 const resourceLinks = [
@@ -102,6 +104,29 @@ export function SiteFooter() {
           <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
           </p>
+          <div className="flex items-center gap-3">
+            {[
+              { href: siteConfig.youtubeUrl, label: "YouTube", icon: <YoutubeIcon className="size-4 text-red-600 dark:text-red-400" /> },
+              { href: personalContact.github, label: "GitHub", icon: <GithubIcon className="size-4 text-muted-foreground" /> },
+              { href: personalContact.facebook, label: "Facebook", icon: <FacebookIcon className="size-4 text-[#1877f2]" /> },
+              { href: personalContact.instagram, label: "Instagram", icon: <InstagramIcon className="size-4 text-[#e4405f]" /> },
+              { href: personalContact.linkedin, label: "LinkedIn", icon: <LinkedinIcon className="size-4 text-[#0077b5]" /> },
+              { href: personalContact.whatsapp.startsWith("YOUR_") ? "#" : `https://wa.me/${personalContact.whatsapp.replace(/[^0-9]/g, "")}`, label: "WhatsApp", icon: <WhatsAppIcon className="size-4 text-emerald-600 dark:text-emerald-400" /> },
+            ]
+              .filter((s) => !s.href.startsWith("YOUR_") && s.href !== "#")
+              .map((social) => (
+                <a
+                  key={social.label}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex size-8 items-center justify-center rounded-md transition-colors hover:bg-accent"
+                  aria-label={social.label}
+                >
+                  {social.icon}
+                </a>
+              ))}
+          </div>
           <p className="text-xs text-muted-foreground">
             Built for developers, by developers.
           </p>
