@@ -1,8 +1,7 @@
-import { ArrowRight, Play, TrendingUp } from "lucide-react";
+import { ArrowRight, TrendingUp } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import { siteConfig } from "@/lib/site";
 
 const CODE_LINES = [
   { indent: 0, parts: [{ text: "import ", color: "text-[#d73a49] dark:text-[#ff7b72]" }, { text: "'package:flutter/material.dart'", color: "text-[#032f62] dark:text-[#a5d6ff]" }, { text: ";", color: "" }] },
@@ -43,21 +42,27 @@ export function Hero() {
 
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Button size="lg" asChild>
-              <Link href="/docs">
-                Explore Documentation
+              <Link href="/ai">
+                Learn AI
                 <ArrowRight aria-hidden="true" />
               </Link>
             </Button>
             <Button size="lg" variant="outline" asChild>
-              <a href={siteConfig.youtubeUrl} target="_blank" rel="noopener noreferrer">
-                <Play aria-hidden="true" />
-                Visit YouTube Channel
-              </a>
+              <Link href="/digital-marketing">Learn Digital Marketing</Link>
             </Button>
           </div>
 
+          <p className="mt-6">
+            <Link
+              href="/docs"
+              className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+            >
+              Prefer coding? Explore the documentation →
+            </Link>
+          </p>
+
           <p className="mt-8 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
-            {["Flutter", "Firebase", "AdMob", "Google Play", "Monetization"].map((topic, index) => (
+            {["Flutter", "Firebase", "AI", "ChatGPT", "SEO", "Monetization"].map((topic, index) => (
               <span key={topic} className="flex items-center gap-2">
                 {index > 0 && <span aria-hidden="true" className="text-border">·</span>}
                 {topic}

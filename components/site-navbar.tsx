@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, Menu, Search } from "lucide-react";
+import { ChevronDown, GraduationCap, Menu, Search } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
@@ -30,6 +30,11 @@ const NAV_LINKS = [
   { label: "About Me", href: "/about" },
 ] as const;
 
+const LEARN_LINKS = [
+  { label: "AI", href: "/ai", description: "AI tools, prompting, automation" },
+  { label: "Digital Marketing", href: "/digital-marketing", description: "SEO, ads, social media" },
+] as const;
+
 export function SiteNavbar({ searchIndex }: { searchIndex: SearchDoc[] }) {
   const pathname = usePathname();
   const [searchOpen, setSearchOpen] = React.useState(false);
@@ -45,6 +50,34 @@ export function SiteNavbar({ searchIndex }: { searchIndex: SearchDoc[] }) {
         <Logo className="mr-1" />
 
         <nav aria-label="Main navigation" className="ml-4 hidden items-center gap-1 md:flex">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className={cn(
+                  "gap-1.5",
+                  isActive("/ai") || isActive("/digital-marketing")
+                    ? "text-foreground"
+                    : "text-muted-foreground",
+                )}
+              >
+                <GraduationCap className="size-4" aria-hidden="true" />
+                Learn
+                <ChevronDown className="size-3.5" aria-hidden="true" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-64">
+              {LEARN_LINKS.map((link) => (
+                <DropdownMenuItem key={link.href} asChild>
+                  <Link href={link.href} className="items-start gap-3 py-2">
+                    <div className="text-sm font-medium">{link.label}</div>
+                    <div className="ml-auto text-xs text-muted-foreground">{link.description}</div>
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
@@ -124,6 +157,26 @@ export function SiteNavbar({ searchIndex }: { searchIndex: SearchDoc[] }) {
                     {link.label}
                   </Link>
                 ))}
+
+                <p className="px-3 pt-5 pb-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                  Learn
+                </p>
+                <div className="grid grid-cols-1 gap-1">
+                  {LEARN_LINKS.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setMobileOpen(false)}
+                      className={cn(
+                        "block rounded-lg px-3 py-2.5 text-[0.95rem] font-medium transition-colors hover:bg-accent",
+                        isActive(link.href) ? "bg-accent text-foreground" : "text-muted-foreground",
+                      )}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+
                 <a
                   href={siteConfig.youtubeUrl}
                   target="_blank"

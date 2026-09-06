@@ -16,6 +16,8 @@ const productLinks = [
 ];
 
 const resourceLinks = [
+  { label: "AI Learning", href: "/ai" },
+  { label: "Digital Marketing Learning", href: "/digital-marketing" },
   { label: "How to Make Money From Apps", href: "/docs/app-monetization/how-to-make-money-from-apps" },
   { label: "App Income Calculator", href: "/tools/app-income-calculator" },
   { label: "AdMob Getting Started", href: "/docs/admob/getting-started" },
